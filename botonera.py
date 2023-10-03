@@ -183,8 +183,7 @@ def recibir_grupo(message, archivo_canales=archivo_canales):
                     if i == str(chat_id):
                         return bot.send_message(message.chat.id, "Ese canal que ingresaste ya está en la botonera Velociraptor\nNo te hagas el listo >:D Vuelve a escribir /ingresar y pueba con otro canal")
                                         
-                with open("canales.txt", "w") as archivo:
-                    archivo.write(str(chat_id))
+                archivo_canales.write(str(chat_id))
                 bot.send_message(message.chat.id, "PERFECTO! 🤩\n\nEl registro está completo mastodonte, añadiré tu canal a la botonera (❁´◡`❁).\n<u>Nota:</u>\nRecuerda que NO PUEDES quitar al bot de la administración o tu canal será ELIMINADO de la botonera", parse_mode="html")
                 bot.send_message(message.chat.id, "Para ver tu canal en la botonera ingresa el comando /mostrar y verás como se hace la magia ;)")
             else:
