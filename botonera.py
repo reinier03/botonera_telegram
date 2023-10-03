@@ -9,10 +9,10 @@ import time
 hora_publicacion=[]
 tiempo_de_espera_botonera=10800
 ejecutar_hilo=True
-foto_LastBotonera=open("D:\\Last_Botonera.jpg", 'rb')
-archivo_canales=open("D:\\canales.txt", "r+")
+foto_LastBotonera=open("Last_Botonera.jpg", 'rb')
+archivo_canales=open("canales.txt", "r+")
 
-bot=telebot.TeleBot("5818205719:AAF9dvuVzM6_tl4zNSL_k1af2B5NiXXba7s")
+bot=telebot.TeleBot("5533429410:AAF9Drcl-ve2zJK34zqoXnfzFwLNrtSnzIY")
 
 bot.set_my_commands([
     telebot.types.BotCommand("/start", "Da una introducción de cómo funciona dicho bot y para que es"),
@@ -256,7 +256,7 @@ def start(message):
     b3=InlineKeyboardButton("🔥Grupo🔥", url="http://t.me/lasthopepost")
     markup.add(b1,b2,b3)
     mensaje="<b>¡HOLA ZORRA!</b> 😈\n\nCansad@ de ir por canales sin ver a uno que robe los Memes/Shitpost de otros canales?🥵\nCansad@ de conversaciones completamente normales sin nada que haga sangrar tus ojos?\nCansad@de que nadie entienda tus parloteos intelectuales? 🧠\nCansado de leer esto como un comercial?🌞🍷\n\n¡No te preocupes! ¡LA SOLUCIÓN acaba de LLEGAR! \nSólo únete a:\n\n<a href='http://t.me/lasthopeposting'>¡LAST HOPE!</a>\n\nPara sentir el VERDADERO salseo en esas nalgas negras😳\n\nTambién tenemos chat <s>hot con mujerzuelas</s>  😳\n\n<u>Atentamente</u>:\nTu mamá en tanga ❤️"
-    archivo=open("D:\\Last_Hope.jpg", "rb")
+    archivo=open("Last_Hope.jpg", "rb")
     bot.send_photo(message.chat.id, archivo, caption=mensaje, parse_mode="html", reply_markup=markup)
 
 
