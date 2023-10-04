@@ -15,7 +15,7 @@ hora_publicacion=[]
 tiempo_de_espera_botonera=10800
 ejecutar_hilo=True
 try:
-    foto_LastBotonera=open(f"{os.path.dirname(os.path.abspath(__file__))}\Last_Botonera.jpg", 'rb')
+    foto_LastBotonera=open(f"{os.path.dirname(os.path.abspath(__file__))}/Last_Botonera.jpg", 'rb')
 except:
     def recibir_foto_promo(message):
         @bot.message_handler(content_types="photo")
@@ -34,7 +34,7 @@ except:
     bot.register_next_step_handler(msg, recibir_foto_promo)
 
         
-archivo_canales=open(f"{os.path.dirname(os.path.abspath(__file__))}\canales.txt", "r+")
+archivo_canales=open(f"{os.path.dirname(os.path.abspath(__file__))}/canales.txt", "r+")
 
 
 #archivo_canales=open("D:\\Nueva Carpeta\\Programacion\\Proyectos Personales\\botonera_telegram\\canales.txt", "r+")
