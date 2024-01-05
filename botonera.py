@@ -1,4 +1,4 @@
-from flask import Flask, request, g
+from flask import Flask, request
 import telebot
 from telebot.types import InlineKeyboardMarkup
 from telebot.types import InlineKeyboardButton
@@ -13,6 +13,8 @@ import dill
 from waitress import serve
 import requests
 
+local_ip = ""
+
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 conexion = sqlite3.connect("Botonera_Canales", check_same_thread=False)
 cursor = conexion.cursor()
@@ -24,7 +26,7 @@ except Exception as e:
 del_hilo = ""
 #-------------------Variables a utilizar en el codigo-------------------------------
 reima = 1413725506
-bot = telebot.TeleBot("6685078171:AAE1c1gH4gnNmStM7nq4v5zal87SDov3izU")
+bot = telebot.TeleBot("6685078171:AAH33t0OaGMu5BX-Xxz2xMyIgtT8tBSQ2zM")
 dic = {}
 hora_publicacion = []
 tiempo_de_espera_botonera = 10800  #Por defecto, tiene asignado 3 horas
@@ -39,17 +41,15 @@ mensajes_a_eliminar_globales = []
 
 #--------------------------------------------------------------------------
 
-try:
-  header = {
-      "user-agent":
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0"
-  }
-  with app.app_context():
-    requests.get(request.host_url, headers=header)
-    bot.send_message(reima, "El bot se encuentra activo")
-except Exception as e:
-  bot.send_message(reima,
-                   f"No pude conectarme a internet :( Excepcion: \n\n{e}")
+
+def peticion():
+  while True:
+    requests.get(
+        "https://d45fc744-df4a-4e07-b863-db6ded551e4f-00-1uu5uv4bxnhj8.riker.replit.dev/"
+    )
+    bot.send_message(-4096123175, "Se realizo una peticion")
+    time.sleep(60)
+
 
 #CARGAR las variables si existe ya un archivo
 if os.path.isfile("variables"):
@@ -349,7 +349,8 @@ def eliminar_botonera():
   global mensajes_a_eliminar
   while hora_eliminacion_botonera:
     if publicaciones == True and time.localtime(
-        hora_publicacion[0] + tiempo_de_espera_botonera) <= time.localtime():
+        hora_eliminacion_botonera[0] +
+        tiempo_eliminacion_botonera) <= time.localtime(time.time()):
       print(mensajes_a_eliminar)
       for item in mensajes_a_eliminar:
         try:
@@ -670,7 +671,7 @@ def respuesta_callback(call):
       except:
         msg = bot.send_message(call.from_user.id,
                                "El canal que ingresaste no existe")
-        bot.register_next_step_handler(msg, registro_de_admin)
+        return
       else:
         for line in lista_canales:
           if chat_admin == line[0]:
@@ -1000,6 +1001,7 @@ def respuesta_callback(call):
 
     mensajes_a_eliminar_globales = []
     hora_eliminacion_botonera = []
+    guardar_variables()
 
     bot.send_message(
         call.from_user.id,
@@ -1293,8 +1295,6 @@ def recibir_grupo(message, canal=None):
 @bot.message_handler(commands=["mostrar"])
 def cmd_mostrar(message, conexion=conexion, hora_publicacion=hora_publicacion):
   global modo_reparacion
-  if not message.chat.type == "private":
-    return
   if modo_reparacion == True:
     funcion_reparacion(message)
     return
@@ -1341,6 +1341,7 @@ def cmd_mostrar(message, conexion=conexion, hora_publicacion=hora_publicacion):
   botonera.row(
       InlineKeyboardButton("(☞ﾟヮﾟ)☞ ÚNETE A LA BOTONERA ☜(ﾟヮﾟ☜)",
                            url="https://t.me/LastBotoneraBot"))
+  foto_LastBotonera.seek(0)
   bot.send_photo(
       message.chat.id,
       foto_LastBotonera,
@@ -1365,14 +1366,12 @@ def cmd_mostrar(message, conexion=conexion, hora_publicacion=hora_publicacion):
 @bot.message_handler(commands=['id'])
 def start(message):
   global modo_reparacion
-  if not message.chat.type == "private":
-    return
   if modo_reparacion == True:
     funcion_reparacion(message)
     return
-  texto = f"El ID del bot es: {bot.user.id}\n"
-  texto += f"Tu ID es: {message.from_user.id}\n"  #1413725506
-  texto += f"El ID de Last Hope es: {bot.get_chat('@LastHopePosting').id}\n"  #-1001161864648
+  texto = f"El ID del bot es: {bot.user.id}\n\n"
+  texto += f"Tu ID es: {message.from_user.id}\n\n"  #1413725506
+  texto += f"El ID de Last Hope es: {bot.get_chat('@LastHopePosting').id}\n\n"  #-1001161864648
   texto += f"El ID del chat es: {message.chat.id}\n"
 
   bot.reply_to(message, texto)
@@ -1380,6 +1379,21 @@ def start(message):
 
 @bot.message_handler(commands=["server"])
 def start(message):
+  if not message.chat.id == reima:
+    return
+  global hilo_peticion
+  global peticion
+  contador = 0
+  for i in threading.enumerate():
+    if "hilo_requests" in str(i):
+      contador += 1
+  else:
+    if contador == 0:
+      bot.send_message(
+          reima, "Pues no existe semejante hilo, lo crearé y lo ejecutaré")
+      hilo_peticion = threading.Thread(name="hilo_requests", target=peticion)
+      hilo_peticion.start()
+
   bot.send_message(message.chat.id,
                    f"El bot está corriendo en el servidor:  {server_address}")
 
@@ -1429,28 +1443,21 @@ def mensajes_al_chat(message):
 server_address = ""
 app = ""
 
+app = Flask('')
 
-def flask_server():
-  global app
+
+@app.route('/')
+def home():
   global server_address
-  # Crear una instancia de la aplicación Flask
-  app = Flask(__name__)
-
-  # Definir una ruta que imprima la dirección del servidor en la web
-  @app.route('/')
-  def index():
-    global server_address
-
-    server_address = request.host_url
-    return f'El servidor de Reima está corriendo en: {server_address}', server_address
-
-  # Ejecutar la aplicación Flask
-  if __name__ == '__main__':
-    #app.run(host='0.0.0.0', port=8181)
-    serve(app, host='0.0.0.0', port=8181)
+  server_address = request.host_url
+  return f"Hello, The bot is running in {request.host_url}"
 
 
-hilo_flask = threading.Thread(name="flask_server", target=flask_server)
-hilo_flask.start()
+def runServer():
+  app.run(host='0.0.0.0', port=8181)
+
+
+t = threading.Thread(name="run_server", target=runServer)
+t.start()
 
 bot.infinity_polling()
