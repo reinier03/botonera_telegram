@@ -15,6 +15,7 @@ import requests
 
 local_ip = ""
 
+
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 conexion = sqlite3.connect("Botonera_Canales", check_same_thread=False)
 cursor = conexion.cursor()
@@ -40,13 +41,14 @@ hora_eliminacion_botonera = []
 mensajes_a_eliminar_globales = []
 
 #--------------------------------------------------------------------------
-
+server_address=""
 
 def peticion():
+  global server_address
   while True:
-    requests.get(
-        "https://d45fc744-df4a-4e07-b863-db6ded551e4f-00-1uu5uv4bxnhj8.riker.replit.dev/"
-    )
+    lista=server_address.split(":")
+    enlace=f"{lista[0]}s:{lista[1]}"
+    requests.get(enlace)
     bot.send_message(-4096123175, "Se realizo una peticion")
     time.sleep(60)
 
@@ -1450,7 +1452,7 @@ app = Flask('')
 def home():
   global server_address
   server_address = request.host_url
-  return f"Hello, The bot is running in {request.host_url}"
+  return f"Hello, The bot is running in {request.host_url}", 200
 
 
 def runServer():
